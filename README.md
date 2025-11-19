@@ -1,14 +1,25 @@
 # S3 Presigned URL Upload
 
-Ce projet contient un script Python pour générer des URLs pré-signées AWS S3 permettant à des utilisateurs non authentifiés d'uploader des fichiers.
+Ce projet contient des scripts pour gérer l'upload de fichiers vers AWS S3 via des URLs pré-signées :
+- **Pour administrateurs** : Script Python pour générer des URLs pré-signées
+- **Pour utilisateurs** : Script bash pour uploader des fichiers sans authentification AWS
 
 ## Prérequis
+
+### Pour administrateurs (génération d'URLs)
 
 - **Python 3.6+**
 - **boto3** : SDK AWS pour Python
 - **Credentials AWS** configurés
 
-### Installation
+### Pour utilisateurs finaux (upload de fichiers)
+
+- **curl** : Outil de transfert de données (généralement pré-installé)
+- **Aucune authentification AWS requise**
+
+## Installation
+
+### Pour administrateurs
 
 ```bash
 # Installer boto3
@@ -22,11 +33,30 @@ aws configure
 # export AWS_DEFAULT_REGION=us-east-1
 ```
 
-## Script principal
+### Pour utilisateurs finaux
 
-### generate-presigned-upload-url.py
+```bash
+# Vérifier que curl est installé
+curl --version
+
+# Si curl n'est pas installé:
+# Ubuntu/Debian:
+sudo apt-get install curl
+
+# macOS (avec Homebrew):
+brew install curl
+
+# CentOS/RHEL:
+sudo yum install curl
+```
+
+## Scripts disponibles
+
+### 1. generate-presigned-upload-url.py (Pour administrateurs AWS)
 
 Script Python pour générer une URL pré-signée permettant l'upload d'un fichier vers un bucket S3.
+
+**Prérequis :** Credentials AWS valides
 
 #### Usage
 
@@ -72,7 +102,84 @@ Script Python pour générer une URL pré-signée permettant l'upload d'un fichi
 - ✅ Gestion d'erreurs complète avec messages explicites
 - ✅ Exemples d'utilisation intégrés
 
-### Utilisation de l'URL générée
+---
+
+### 2. upload-to-presigned-url.sh (Pour utilisateurs finaux)
+
+Script bash permettant d'uploader un fichier vers S3 en utilisant une URL pré-signée.
+
+**Prérequis :** Aucune authentification AWS requise, seulement `curl`
+
+#### Usage
+
+```bash
+./upload-to-presigned-url.sh <fichier> <url-presignee> [options]
+```
+
+#### Options
+
+- **fichier** (positionnel, requis) : Chemin vers le fichier à uploader
+- **url-presignee** (positionnel, requis) : URL pré-signée fournie par l'administrateur
+- **-v, --verbose** : Mode verbeux - affiche plus de détails
+- **-h, --help** : Affiche l'aide
+
+#### Exemples
+
+```bash
+# Upload basique
+./upload-to-presigned-url.sh document.pdf "https://bucket.s3.amazonaws.com/..."
+
+# Avec mode verbeux
+./upload-to-presigned-url.sh photo.jpg "https://bucket.s3.amazonaws.com/..." --verbose
+
+# L'URL doit être entre guillemets
+./upload-to-presigned-url.sh rapport.xlsx "https://my-bucket.s3.us-east-1.amazonaws.com/..."
+```
+
+#### Fonctionnalités
+
+- ✅ Upload simple sans credentials AWS
+- ✅ Détection automatique du type MIME
+- ✅ Affichage de la progression
+- ✅ Gestion d'erreurs avec messages explicites
+- ✅ Validation du fichier avant upload
+- ✅ Support de tous les types de fichiers
+- ✅ Messages d'erreur détaillés (URL expirée, accès refusé, etc.)
+
+#### Codes de retour
+
+- **0** : Upload réussi
+- **1** : Erreur (fichier inexistant, URL expirée, accès refusé, etc.)
+
+---
+
+### Workflow complet
+
+#### Étape 1 : Administrateur génère l'URL
+
+```bash
+# L'admin génère une URL pré-signée
+./generate-presigned-upload-url.py my-bucket -k uploads/rapport.pdf -e 3600
+
+# Sortie : https://my-bucket.s3.amazonaws.com/uploads/rapport.pdf?X-Amz-Algorithm=...
+```
+
+#### Étape 2 : Administrateur partage l'URL
+
+L'administrateur envoie l'URL pré-signée à l'utilisateur (email, chat, etc.)
+
+#### Étape 3 : Utilisateur upload le fichier
+
+```bash
+# L'utilisateur upload son fichier (sans credentials AWS)
+./upload-to-presigned-url.sh rapport.pdf "https://my-bucket.s3.amazonaws.com/..."
+
+# ✓ Upload réussi!
+```
+
+---
+
+### Utilisation de l'URL générée (méthodes alternatives)
 
 Une fois l'URL pré-signée générée, un utilisateur peut uploader un fichier sans credentials AWS :
 
