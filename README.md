@@ -1,62 +1,62 @@
 # S3 Presigned URL Upload & Download
 
-Ce projet contient des scripts pour gérer l'upload et le téléchargement de fichiers vers/depuis AWS S3 via des URLs pré-signées :
-- **Pour administrateurs** : Scripts Python pour générer des URLs pré-signées (upload et download)
-- **Pour utilisateurs** : Scripts bash pour uploader/télécharger des fichiers sans authentification AWS
+This project contains scripts to manage file uploads and downloads to/from AWS S3 via presigned URLs:
+- **For administrators**: Python scripts to generate presigned URLs (upload and download)
+- **For users**: Bash scripts to upload/download files without AWS authentication
 
-## Prérequis
+## Prerequisites
 
-### Pour administrateurs (génération d'URLs)
+### For administrators (URL generation)
 
 - **Python 3.6+**
-- **boto3** : SDK AWS pour Python
-- **Credentials AWS** configurés
+- **boto3**: AWS SDK for Python
+- **Configured AWS credentials**
 
-### Pour utilisateurs finaux (upload et téléchargement de fichiers)
+### For end users (file upload and download)
 
-- **curl** : Outil de transfert de données (généralement pré-installé)
-- **Aucune authentification AWS requise**
+- **curl**: Data transfer tool (usually pre-installed)
+- **No AWS authentication required**
 
 ## Installation
 
-### Pour administrateurs
+### For administrators
 
 ```bash
-# Installer boto3
+# Install boto3
 pip3 install boto3
 
-# Configurer les credentials AWS (si pas déjà fait)
+# Configure AWS credentials (if not already done)
 aws configure
-# OU définir les variables d'environnement:
+# OR set environment variables:
 # export AWS_ACCESS_KEY_ID=your_access_key
 # export AWS_SECRET_ACCESS_KEY=your_secret_key
 # export AWS_DEFAULT_REGION=us-east-1
 ```
 
-### Pour utilisateurs finaux
+### For end users
 
 ```bash
-# Vérifier que curl est installé
+# Check if curl is installed
 curl --version
 
-# Si curl n'est pas installé:
+# If curl is not installed:
 # Ubuntu/Debian:
 sudo apt-get install curl
 
-# macOS (avec Homebrew):
+# macOS (with Homebrew):
 brew install curl
 
 # CentOS/RHEL:
 sudo yum install curl
 ```
 
-## Scripts disponibles
+## Available Scripts
 
-### 1. generate-presigned-upload-url.py (Pour administrateurs AWS)
+### 1. generate-presigned-upload-url.py (For AWS administrators)
 
-Script Python pour générer une URL pré-signée permettant l'upload d'un fichier vers un bucket S3.
+Python script to generate a presigned URL allowing file upload to an S3 bucket.
 
-**Prérequis :** Credentials AWS valides
+**Prerequisites:** Valid AWS credentials
 
 #### Usage
 
@@ -66,98 +66,98 @@ Script Python pour générer une URL pré-signée permettant l'upload d'un fichi
 
 #### Options
 
-- **bucket_name** (positionnel, requis) : Nom du bucket S3 cible
-- **--object-key, -k** : Chemin/nom du fichier dans S3 (défaut: `uploads/file-YYYYMMDD-HHMMSS`)
-- **--expiration, -e** : Durée de validité en secondes (défaut: 3600 = 1 heure)
-- **--content-type, -t** : Type MIME du fichier (ex: `image/jpeg`, `application/pdf`)
-- **--quiet, -q** : Mode silencieux - affiche uniquement l'URL
-- **--help, -h** : Affiche l'aide
+- **bucket_name** (positional, required): Target S3 bucket name
+- **--object-key, -k**: File path/name in S3 (default: `uploads/file-YYYYMMDD-HHMMSS`)
+- **--expiration, -e**: Validity duration in seconds (default: 3600 = 1 hour)
+- **--content-type, -t**: File MIME type (e.g., `image/jpeg`, `application/pdf`)
+- **--quiet, -q**: Quiet mode - displays only the URL
+- **--help, -h**: Display help
 
-#### Exemples
+#### Examples
 
 ```bash
-# Générer une URL avec paramètres par défaut
+# Generate a URL with default parameters
 ./generate-presigned-upload-url.py my-bucket
 
-# Spécifier le chemin du fichier dans S3
+# Specify the file path in S3
 ./generate-presigned-upload-url.py my-bucket --object-key uploads/document.pdf
 
-# Spécifier une expiration de 2 heures (7200 secondes)
+# Specify a 2-hour expiration (7200 seconds)
 ./generate-presigned-upload-url.py my-bucket -k uploads/document.pdf -e 7200
 
-# Avec un type MIME spécifique
+# With a specific MIME type
 ./generate-presigned-upload-url.py my-bucket -k images/photo.jpg -t image/jpeg
 
-# Mode silencieux (pour scripts)
+# Quiet mode (for scripts)
 ./generate-presigned-upload-url.py my-bucket -q
 ```
 
-#### Fonctionnalités
+#### Features
 
-- ✅ Génération d'URL pré-signée pour l'opération PUT
-- ✅ Support du Content-Type personnalisé
-- ✅ Validation automatique des credentials AWS
-- ✅ Affichage coloré et formaté des résultats
-- ✅ Mode silencieux pour intégration dans des scripts
-- ✅ Gestion d'erreurs complète avec messages explicites
-- ✅ Exemples d'utilisation intégrés
+- ✅ Presigned URL generation for PUT operation
+- ✅ Custom Content-Type support
+- ✅ Automatic AWS credentials validation
+- ✅ Colored and formatted output display
+- ✅ Quiet mode for script integration
+- ✅ Complete error handling with explicit messages
+- ✅ Built-in usage examples
 
 ---
 
-### 2. upload-to-presigned-url.sh (Pour utilisateurs finaux)
+### 2. upload-to-presigned-url.sh (For end users)
 
-Script bash permettant d'uploader un fichier vers S3 en utilisant une URL pré-signée.
+Bash script to upload a file to S3 using a presigned URL.
 
-**Prérequis :** Aucune authentification AWS requise, seulement `curl`
+**Prerequisites:** No AWS authentication required, only `curl`
 
 #### Usage
 
 ```bash
-./upload-to-presigned-url.sh <fichier> <url-presignee> [options]
+./upload-to-presigned-url.sh <file> <presigned-url> [options]
 ```
 
 #### Options
 
-- **fichier** (positionnel, requis) : Chemin vers le fichier à uploader
-- **url-presignee** (positionnel, requis) : URL pré-signée fournie par l'administrateur
-- **-v, --verbose** : Mode verbeux - affiche plus de détails
-- **-h, --help** : Affiche l'aide
+- **file** (positional, required): Path to the file to upload
+- **presigned-url** (positional, required): Presigned URL provided by the administrator
+- **-v, --verbose**: Verbose mode - displays more details
+- **-h, --help**: Display help
 
-#### Exemples
+#### Examples
 
 ```bash
-# Upload basique
+# Basic upload
 ./upload-to-presigned-url.sh document.pdf "https://bucket.s3.amazonaws.com/..."
 
-# Avec mode verbeux
+# With verbose mode
 ./upload-to-presigned-url.sh photo.jpg "https://bucket.s3.amazonaws.com/..." --verbose
 
-# L'URL doit être entre guillemets
-./upload-to-presigned-url.sh rapport.xlsx "https://my-bucket.s3.us-east-1.amazonaws.com/..."
+# The URL must be in quotes
+./upload-to-presigned-url.sh report.xlsx "https://my-bucket.s3.us-east-1.amazonaws.com/..."
 ```
 
-#### Fonctionnalités
+#### Features
 
-- ✅ Upload simple sans credentials AWS
-- ✅ Détection automatique du type MIME
-- ✅ Affichage de la progression
-- ✅ Gestion d'erreurs avec messages explicites
-- ✅ Validation du fichier avant upload
-- ✅ Support de tous les types de fichiers
-- ✅ Messages d'erreur détaillés (URL expirée, accès refusé, etc.)
+- ✅ Simple upload without AWS credentials
+- ✅ Automatic MIME type detection
+- ✅ Progress display
+- ✅ Error handling with explicit messages
+- ✅ File validation before upload
+- ✅ Support for all file types
+- ✅ Detailed error messages (expired URL, access denied, etc.)
 
-#### Codes de retour
+#### Return Codes
 
-- **0** : Upload réussi
-- **1** : Erreur (fichier inexistant, URL expirée, accès refusé, etc.)
+- **0**: Upload successful
+- **1**: Error (file not found, expired URL, access denied, etc.)
 
 ---
 
-### 3. generate-presigned-download-url.py (Pour administrateurs AWS)
+### 3. generate-presigned-download-url.py (For AWS administrators)
 
-Script Python pour générer une URL pré-signée permettant le téléchargement d'un fichier depuis un bucket S3.
+Python script to generate a presigned URL allowing file download from an S3 bucket.
 
-**Prérequis :** Credentials AWS valides
+**Prerequisites:** Valid AWS credentials
 
 #### Usage
 
@@ -167,234 +167,234 @@ Script Python pour générer une URL pré-signée permettant le téléchargement
 
 #### Options
 
-- **bucket_name** (positionnel, requis) : Nom du bucket S3 cible
-- **object_key** (positionnel, requis) : Chemin/nom du fichier dans S3
-- **--expiration, -e** : Durée de validité en secondes (défaut: 3600 = 1 heure)
-- **--filename, -f** : Nom de fichier suggéré pour le téléchargement
-- **--quiet, -q** : Mode silencieux - affiche uniquement l'URL
-- **--no-check** : Ne pas vérifier si le fichier existe (plus rapide)
-- **--help, -h** : Affiche l'aide
+- **bucket_name** (positional, required): Target S3 bucket name
+- **object_key** (positional, required): File path/name in S3
+- **--expiration, -e**: Validity duration in seconds (default: 3600 = 1 hour)
+- **--filename, -f**: Suggested filename for download
+- **--quiet, -q**: Quiet mode - displays only the URL
+- **--no-check**: Don't check if the file exists (faster)
+- **--help, -h**: Display help
 
-#### Exemples
+#### Examples
 
 ```bash
-# Générer une URL pour télécharger un fichier existant
+# Generate a URL to download an existing file
 ./generate-presigned-download-url.py my-bucket uploads/document.pdf
 
-# Spécifier une expiration de 2 heures (7200 secondes)
+# Specify a 2-hour expiration (7200 seconds)
 ./generate-presigned-download-url.py my-bucket uploads/document.pdf -e 7200
 
-# Suggérer un nom de fichier pour le téléchargement
-./generate-presigned-download-url.py my-bucket data/rapport.xlsx --filename "rapport-2025.xlsx"
+# Suggest a filename for download
+./generate-presigned-download-url.py my-bucket data/report.xlsx --filename "report-2025.xlsx"
 
-# Mode silencieux (pour scripts)
+# Quiet mode (for scripts)
 ./generate-presigned-download-url.py my-bucket uploads/photo.jpg -q
 ```
 
-#### Fonctionnalités
+#### Features
 
-- ✅ Génération d'URL pré-signée pour l'opération GET
-- ✅ Vérification automatique de l'existence du fichier
-- ✅ Affichage des informations du fichier (taille, type, date)
-- ✅ Support du nom de fichier suggéré pour le téléchargement
-- ✅ Validation automatique des credentials AWS
-- ✅ Affichage coloré et formaté des résultats
-- ✅ Mode silencieux pour intégration dans des scripts
-- ✅ Gestion d'erreurs complète avec messages explicites
+- ✅ Presigned URL generation for GET operation
+- ✅ Automatic file existence verification
+- ✅ File information display (size, type, date)
+- ✅ Support for suggested filename for download
+- ✅ Automatic AWS credentials validation
+- ✅ Colored and formatted output display
+- ✅ Quiet mode for script integration
+- ✅ Complete error handling with explicit messages
 
 ---
 
-### 4. download-from-presigned-url.sh (Pour utilisateurs finaux)
+### 4. download-from-presigned-url.sh (For end users)
 
-Script bash permettant de télécharger un fichier depuis S3 en utilisant une URL pré-signée.
+Bash script to download a file from S3 using a presigned URL.
 
-**Prérequis :** Aucune authentification AWS requise, seulement `curl`
+**Prerequisites:** No AWS authentication required, only `curl`
 
 #### Usage
 
 ```bash
-./download-from-presigned-url.sh <url-presignee> [fichier-destination] [options]
+./download-from-presigned-url.sh <presigned-url> [destination-file] [options]
 ```
 
 #### Options
 
-- **url-presignee** (positionnel, requis) : URL pré-signée fournie par l'administrateur
-- **fichier-destination** (positionnel, optionnel) : Chemin où enregistrer le fichier
-- **-v, --verbose** : Mode verbeux - affiche plus de détails
-- **-h, --help** : Affiche l'aide
+- **presigned-url** (positional, required): Presigned URL provided by the administrator
+- **destination-file** (positional, optional): Path where to save the file
+- **-v, --verbose**: Verbose mode - displays more details
+- **-h, --help**: Display help
 
-#### Exemples
+#### Examples
 
 ```bash
-# Téléchargement basique (nom de fichier auto-détecté)
+# Basic download (auto-detected filename)
 ./download-from-presigned-url.sh "https://bucket.s3.amazonaws.com/..."
 
-# Spécifier le nom du fichier de destination
+# Specify the destination filename
 ./download-from-presigned-url.sh "https://bucket.s3.amazonaws.com/..." document.pdf
 
-# Avec chemin complet et mode verbeux
-./download-from-presigned-url.sh "https://bucket.s3.amazonaws.com/..." ./downloads/rapport.pdf --verbose
+# With full path and verbose mode
+./download-from-presigned-url.sh "https://bucket.s3.amazonaws.com/..." ./downloads/report.pdf --verbose
 ```
 
-#### Fonctionnalités
+#### Features
 
-- ✅ Téléchargement simple sans credentials AWS
-- ✅ Détection automatique du nom de fichier depuis l'URL
-- ✅ Affichage des informations du fichier (taille, type)
-- ✅ Affichage de la progression
-- ✅ Gestion d'erreurs avec messages explicites
-- ✅ Vérification de l'écrasement de fichier existant
-- ✅ Nettoyage automatique en cas d'erreur
-- ✅ Messages d'erreur détaillés (URL expirée, fichier non trouvé, etc.)
+- ✅ Simple download without AWS credentials
+- ✅ Automatic filename detection from URL
+- ✅ File information display (size, type)
+- ✅ Progress display
+- ✅ Error handling with explicit messages
+- ✅ Existing file overwrite verification
+- ✅ Automatic cleanup on error
+- ✅ Detailed error messages (expired URL, file not found, etc.)
 
-#### Codes de retour
+#### Return Codes
 
-- **0** : Téléchargement réussi
-- **1** : Erreur (URL expirée, fichier non trouvé, accès refusé, etc.)
+- **0**: Download successful
+- **1**: Error (expired URL, file not found, access denied, etc.)
 
 ---
 
-### Workflows complets
+### Complete Workflows
 
-#### Workflow Upload
+#### Upload Workflow
 
-#### Étape 1 : Administrateur génère l'URL
+#### Step 1: Administrator generates the URL
 
 ```bash
-# L'admin génère une URL pré-signée
-./generate-presigned-upload-url.py my-bucket -k uploads/rapport.pdf -e 3600
+# Admin generates a presigned URL
+./generate-presigned-upload-url.py my-bucket -k uploads/report.pdf -e 3600
 
-# Sortie : https://my-bucket.s3.amazonaws.com/uploads/rapport.pdf?X-Amz-Algorithm=...
+# Output: https://my-bucket.s3.amazonaws.com/uploads/report.pdf?X-Amz-Algorithm=...
 ```
 
-#### Étape 2 : Administrateur partage l'URL
+#### Step 2: Administrator shares the URL
 
-L'administrateur envoie l'URL pré-signée à l'utilisateur (email, chat, etc.)
+The administrator sends the presigned URL to the user (email, chat, etc.)
 
-#### Étape 3 : Utilisateur upload le fichier
+#### Step 3: User uploads the file
 
 ```bash
-# L'utilisateur upload son fichier (sans credentials AWS)
-./upload-to-presigned-url.sh rapport.pdf "https://my-bucket.s3.amazonaws.com/..."
+# User uploads their file (without AWS credentials)
+./upload-to-presigned-url.sh report.pdf "https://my-bucket.s3.amazonaws.com/..."
 
-# ✓ Upload réussi!
+# ✓ Upload successful!
 ```
 
-#### Workflow Download
+#### Download Workflow
 
-#### Étape 1 : Administrateur génère l'URL de téléchargement
+#### Step 1: Administrator generates the download URL
 
 ```bash
-# L'admin génère une URL pré-signée pour télécharger un fichier existant
-./generate-presigned-download-url.py my-bucket uploads/rapport.pdf -e 3600
+# Admin generates a presigned URL to download an existing file
+./generate-presigned-download-url.py my-bucket uploads/report.pdf -e 3600
 
-# Sortie : https://my-bucket.s3.amazonaws.com/uploads/rapport.pdf?X-Amz-Algorithm=...
+# Output: https://my-bucket.s3.amazonaws.com/uploads/report.pdf?X-Amz-Algorithm=...
 ```
 
-#### Étape 2 : Administrateur partage l'URL
+#### Step 2: Administrator shares the URL
 
-L'administrateur envoie l'URL pré-signée à l'utilisateur (email, chat, etc.)
+The administrator sends the presigned URL to the user (email, chat, etc.)
 
-#### Étape 3 : Utilisateur télécharge le fichier
+#### Step 3: User downloads the file
 
 ```bash
-# L'utilisateur télécharge le fichier (sans credentials AWS)
-./download-from-presigned-url.sh "https://my-bucket.s3.amazonaws.com/..." rapport.pdf
+# User downloads the file (without AWS credentials)
+./download-from-presigned-url.sh "https://my-bucket.s3.amazonaws.com/..." report.pdf
 
-# ✓ Téléchargement réussi!
+# ✓ Download successful!
 ```
 
 ---
 
-### Utilisation de l'URL générée (méthodes alternatives)
+### Using the Generated URL (Alternative Methods)
 
-#### Pour l'upload
+#### For Upload
 
-Une fois l'URL pré-signée d'upload générée, un utilisateur peut uploader un fichier sans credentials AWS :
+Once the upload presigned URL is generated, a user can upload a file without AWS credentials:
 
-**Avec curl:**
+**With curl:**
 ```bash
-curl -X PUT -T "chemin/vers/fichier.pdf" "URL_PRESIGNEE_UPLOAD"
+curl -X PUT -T "path/to/file.pdf" "PRESIGNED_UPLOAD_URL"
 ```
 
-**Avec wget:**
+**With wget:**
 ```bash
-wget --method=PUT --body-file="chemin/vers/fichier.pdf" "URL_PRESIGNEE_UPLOAD"
+wget --method=PUT --body-file="path/to/file.pdf" "PRESIGNED_UPLOAD_URL"
 ```
 
-**Avec Python requests:**
+**With Python requests:**
 ```python
 import requests
 
-with open('fichier.pdf', 'rb') as f:
-    response = requests.put('URL_PRESIGNEE_UPLOAD', data=f)
+with open('file.pdf', 'rb') as f:
+    response = requests.put('PRESIGNED_UPLOAD_URL', data=f)
     print(f"Status: {response.status_code}")
 ```
 
-**Avec JavaScript (fetch):**
+**With JavaScript (fetch):**
 ```javascript
 const file = document.getElementById('fileInput').files[0];
-fetch('URL_PRESIGNEE_UPLOAD', {
+fetch('PRESIGNED_UPLOAD_URL', {
     method: 'PUT',
     body: file
 })
-.then(response => console.log('Upload réussi:', response.status))
-.catch(error => console.error('Erreur:', error));
+.then(response => console.log('Upload successful:', response.status))
+.catch(error => console.error('Error:', error));
 ```
 
-#### Pour le téléchargement
+#### For Download
 
-Une fois l'URL pré-signée de téléchargement générée, un utilisateur peut télécharger le fichier sans credentials AWS :
+Once the download presigned URL is generated, a user can download the file without AWS credentials:
 
-**Avec curl:**
+**With curl:**
 ```bash
-curl -o "fichier.pdf" "URL_PRESIGNEE_DOWNLOAD"
+curl -o "file.pdf" "PRESIGNED_DOWNLOAD_URL"
 ```
 
-**Avec wget:**
+**With wget:**
 ```bash
-wget -O "fichier.pdf" "URL_PRESIGNEE_DOWNLOAD"
+wget -O "file.pdf" "PRESIGNED_DOWNLOAD_URL"
 ```
 
-**Avec Python requests:**
+**With Python requests:**
 ```python
 import requests
 
-response = requests.get('URL_PRESIGNEE_DOWNLOAD')
-with open('fichier.pdf', 'wb') as f:
+response = requests.get('PRESIGNED_DOWNLOAD_URL')
+with open('file.pdf', 'wb') as f:
     f.write(response.content)
 print(f"Status: {response.status_code}")
 ```
 
-**Avec JavaScript (fetch):**
+**With JavaScript (fetch):**
 ```javascript
-fetch('URL_PRESIGNEE_DOWNLOAD')
+fetch('PRESIGNED_DOWNLOAD_URL')
     .then(response => response.blob())
     .then(blob => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'fichier.pdf';
+        a.download = 'file.pdf';
         a.click();
     })
-    .catch(error => console.error('Erreur:', error));
+    .catch(error => console.error('Error:', error));
 ```
 
-**Dans un navigateur web:**
+**In a web browser:**
 ```
-Il suffit de coller l'URL dans la barre d'adresse pour télécharger le fichier
+Simply paste the URL in the address bar to download the file
 ```
 
-### Utilisation comme module Python
+### Using as a Python Module
 
-Vous pouvez également importer les scripts dans vos propres applications Python :
+You can also import the scripts into your own Python applications:
 
-#### Pour l'upload
+#### For Upload
 
 ```python
 from generate_presigned_upload_url import generate_presigned_url
 
-# Générer une URL pré-signée pour upload
+# Generate a presigned URL for upload
 url = generate_presigned_url(
     bucket_name='my-bucket',
     object_key='uploads/file.pdf',
@@ -403,31 +403,31 @@ url = generate_presigned_url(
 )
 
 if url:
-    print(f"URL d'upload générée: {url}")
+    print(f"Upload URL generated: {url}")
 ```
 
-#### Pour le téléchargement
+#### For Download
 
 ```python
 from generate_presigned_download_url import generate_presigned_download_url
 
-# Générer une URL pré-signée pour téléchargement
+# Generate a presigned URL for download
 url = generate_presigned_download_url(
     bucket_name='my-bucket',
     object_key='uploads/file.pdf',
     expiration=3600,
-    filename='mon-fichier.pdf'
+    filename='my-file.pdf'
 )
 
 if url:
-    print(f"URL de téléchargement générée: {url}")
+    print(f"Download URL generated: {url}")
 ```
 
-## Permissions AWS requises
+## Required AWS Permissions
 
-Le compte AWS utilisé pour générer les URLs pré-signées doit avoir les permissions suivantes :
+The AWS account used to generate presigned URLs must have the following permissions:
 
-### Pour upload et téléchargement
+### For Upload and Download
 
 ```json
 {
@@ -445,9 +445,9 @@ Le compte AWS utilisé pour générer les URLs pré-signées doit avoir les perm
 }
 ```
 
-### Configuration minimale IAM
+### Minimal IAM Configuration
 
-Pour un utilisateur dédié à la génération d'URLs pré-signées (upload et téléchargement) :
+For a user dedicated to generating presigned URLs (upload and download):
 
 ```json
 {
@@ -477,11 +477,11 @@ Pour un utilisateur dédié à la génération d'URLs pré-signées (upload et t
 }
 ```
 
-### Permissions séparées (recommandé)
+### Separate Permissions (Recommended)
 
-Si vous souhaitez séparer les responsabilités :
+If you want to separate responsibilities:
 
-**Utilisateur Upload uniquement:**
+**Upload-only User:**
 ```json
 {
     "Version": "2012-10-17",
@@ -495,7 +495,7 @@ Si vous souhaitez séparer les responsabilités :
 }
 ```
 
-**Utilisateur Download uniquement:**
+**Download-only User:**
 ```json
 {
     "Version": "2012-10-17",
@@ -509,65 +509,65 @@ Si vous souhaitez séparer les responsabilités :
 }
 ```
 
-## Sécurité
+## Security
 
-### Bonnes pratiques
+### Best Practices
 
-- ✅ Les URLs pré-signées expirent après la durée spécifiée
-- ✅ Utilisez des durées d'expiration courtes (< 1 heure) pour les données sensibles
-- ✅ Ne partagez les URLs qu'avec des utilisateurs de confiance
-- ✅ Restreignez les permissions IAM au minimum nécessaire
-- ✅ Utilisez des préfixes de clés (ex: `uploads/`) pour isoler les uploads
-- ✅ Configurez des politiques de bucket pour limiter les types de fichiers
-- ⚠️ Les fichiers uploadés héritent des permissions par défaut du bucket
-- ⚠️ Considérez l'activation du chiffrement côté serveur (SSE)
+- ✅ Presigned URLs expire after the specified duration
+- ✅ Use short expiration times (< 1 hour) for sensitive data
+- ✅ Only share URLs with trusted users
+- ✅ Restrict IAM permissions to the minimum necessary
+- ✅ Use key prefixes (e.g., `uploads/`) to isolate uploads
+- ✅ Configure bucket policies to limit file types
+- ⚠️ Uploaded files inherit the bucket's default permissions
+- ⚠️ Consider enabling server-side encryption (SSE)
 
-### Limitations de sécurité
+### Security Limitations
 
-- Les URLs pré-signées ne peuvent pas restreindre la taille du fichier
-- Le Content-Type peut être contourné par l'utilisateur
-- Envisagez une validation côté serveur après l'upload
+- Presigned URLs cannot restrict file size
+- Content-Type can be bypassed by the user
+- Consider server-side validation after upload
 
-## Dépannage
+## Troubleshooting
 
-### Erreur: "Le module boto3 n'est pas installé"
+### Error: "The boto3 module is not installed"
 ```bash
 pip3 install boto3
 ```
 
-### Erreur: "Credentials AWS non trouvés"
+### Error: "AWS credentials not found"
 ```bash
-# Option 1: Configurer AWS CLI
+# Option 1: Configure AWS CLI
 aws configure
 
-# Option 2: Variables d'environnement
+# Option 2: Environment variables
 export AWS_ACCESS_KEY_ID=your_access_key
 export AWS_SECRET_ACCESS_KEY=your_secret_key
 export AWS_DEFAULT_REGION=us-east-1
 ```
 
-### Erreur: "Access Denied"
+### Error: "Access Denied"
 
-Vérifiez que :
-1. Vos credentials AWS sont valides
-2. L'utilisateur IAM a les permissions `s3:PutObject` sur le bucket
-3. Le nom du bucket est correct
-4. La région AWS est correcte
+Verify that:
+1. Your AWS credentials are valid
+2. The IAM user has `s3:PutObject` permissions on the bucket
+3. The bucket name is correct
+4. The AWS region is correct
 
-### Le script ne trouve pas Python
+### Script cannot find Python
 
 ```bash
-# Vérifier la version de Python
+# Check Python version
 python3 --version
 
-# Si nécessaire, modifier le shebang du script
-# De: #!/usr/bin/env python3
-# À: #!/usr/bin/python3
+# If necessary, modify the script's shebang
+# From: #!/usr/bin/env python3
+# To: #!/usr/bin/python3
 ```
 
-## Cas d'usage
+## Use Cases
 
-### Intégration dans une application web
+### Integration in a Web Application
 
 ```python
 from flask import Flask, jsonify
@@ -585,20 +585,20 @@ def get_upload_url(filename):
     return jsonify({'upload_url': url})
 ```
 
-### Script automatisé
+### Automated Script
 
 ```bash
 #!/bin/bash
-# Générer une URL et l'envoyer par email
+# Generate a URL and send it by email
 
 URL=$(./generate-presigned-upload-url.py my-bucket -q)
-echo "Voici votre lien d'upload: $URL" | mail -s "Lien d'upload" user@example.com
+echo "Here is your upload link: $URL" | mail -s "Upload Link" user@example.com
 ```
 
-## Contribution
+## Contributing
 
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou soumettre une pull request.
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-## Licence
+## License
 
 MIT
